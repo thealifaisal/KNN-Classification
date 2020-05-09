@@ -1,0 +1,2 @@
+Since, K=3 in this assignment. Of the top 3 documents, when 2 belong to same class and 1 belong to different
+class but this 1 document is highly similar to the test document. So what label would we assign to the text document.
