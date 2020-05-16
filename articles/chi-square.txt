@@ -1,0 +1,25 @@
+https://towardsdatascience.com/chi-square-test-for-feature-selection-in-machine-learning-206b1f0b8223
+
+Limitations
+Chi-Square is sensitive to small frequencies in cells of tables. 
+Generally, when the expected value in a cell of a table is less than 5, chi-square can lead to errors in conclusions.
+
+
+https://towardsdatascience.com/chi-squared-test-for-feature-selection-with-implementation-in-python-65b4ae7696db
+
+When to use Chi-Squared Test:
+When the data type of our feature to be tested and the target variable are both categorical 
+(i.e. we have a classification problem) we can use Chi-Squared test.
+
+Chi-Squared Test Explained:
+The Pearson’s Chi-Squared test, or just Chi-Squared test, is named after the mathematician Karl Pearson. 
+It is also called a “goodness of fit” statistic.
+
+
+http://ethen8181.github.io/machine-learning/text_classification/chisquare.html
+
+https://nlp.stanford.edu/IR-book/html/htmledition/feature-selectionchi2-feature-selection-1.html#eqn:chisquare
+
+https://stats.stackexchange.com/questions/24179/how-exactly-does-chi-square-feature-selection-work
+
+https://www.youtube.com/watch?time_continue=5&v=IrZOKSGShC8
