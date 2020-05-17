@@ -100,9 +100,9 @@ if __name__ == "__main__":
         correct_predictions += ml.classifyKNN(result_set, k, test_composite_key)
 
     # accuracy = no of files correctly predicted / total files tested
-    accuracy = correct_predictions / testset_len
+    accuracy = format(correct_predictions / testset_len, ".5f")
 
-    print(datetime.now().strftime("%H:%M:%S") + ": KNN accuracy = " + str(accuracy))
+    print(datetime.now().strftime("%H:%M:%S") + ": KNN accuracy = " + accuracy)
 
     print(datetime.now().strftime("%H:%M:%S") + ": detailed result saved in ../out/predictions.txt")
 
