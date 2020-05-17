@@ -1,3 +1,10 @@
+# ******************************************
+#
+#   AUTHOR: ALI FAISAL
+#   Github: https://github.com/thealifaisal/
+#
+# ******************************************
+
 import openpyxl
 from datetime import datetime
 from src.ml_vsm import MachineLearning
@@ -20,9 +27,15 @@ if __name__ == "__main__":
 
     print(datetime.now().strftime("%H:%M:%S") + ": serializing raw data...")
     ser = Serialization()
+    # imports stoplist
     stop_list = ser.importStopList(stop_file_path)
     ser.preprocessing.stop_word = stop_list
+
+    # returns a serialized data from raw text files
+    # e.g: json_list = [{"id": id1, "label": lb, "features": {"term": tf}}, {...}, {...}, ...]
     json_list = ser.readRawData(data_folder_path)
+
+    # randomize all the files for fair splitting
     ser.shuffleJSONObjects(json_list)
     # ser.writeToJSONFile(json_list, json_file_path)
 
@@ -51,6 +64,7 @@ if __name__ == "__main__":
     print(datetime.now().strftime("%H:%M:%S") + ": creating vocabulary...")
     vocabulary = ml.createVocabulary(train_set)
     vocabulary_len = len(vocabulary)
+    print(datetime.now().strftime("%H:%M:%S") + ": vocabulary size = " + str(vocabulary_len))
 
     wb = openpyxl.Workbook()
     wb_sheet = wb.active
@@ -63,3 +77,33 @@ if __name__ == "__main__":
 
     # print(datetime.now().strftime("%H:%M:%S") + ": saving training vectors...")
     # wb.save(train_vectors_path)
+
+    print(datetime.now().strftime("%H:%M:%S") + ": started testing...")
+
+    # number of correct predictions
+    correct_predictions = 0
+
+    # iterating for every test file
+    for i in range(0, testset_len):
+        test_obj = test_set[i]
+        ml.createTestVector(vocabulary, wb_sheet, test_obj, trainset_len)
+
+        # returns a result dict, where doc with highest cosine is the first item
+        # result_set = {"062_c": 0.51468, ...}
+        result_set = ml.cosineSimilarity(trainset_len, vocabulary_len, wb_sheet)
+
+        # k = 3; to select top k neighbors/docs from result_set
+        k = 3
+
+        # e.g: test_composite_key = 096_c
+        test_composite_key = test_obj["id"] + "_" + test_obj["label"][0]
+        correct_predictions += ml.classifyKNN(result_set, k, test_composite_key)
+
+    # accuracy = no of files correctly predicted / total files tested
+    accuracy = correct_predictions / testset_len
+
+    print(datetime.now().strftime("%H:%M:%S") + ": KNN accuracy = " + str(accuracy))
+
+    print(datetime.now().strftime("%H:%M:%S") + ": detailed result saved in ../out/predictions.txt")
+
+    # ----------- the end -----------
