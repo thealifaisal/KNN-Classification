@@ -3,7 +3,8 @@ import math
 
 class MachineLearning:
 
-    def createTrainVectors(self, vocabulary, wb_sheet, train_set):
+    @staticmethod
+    def createTrainVectors(vocabulary, wb_sheet, train_set):
         # train_set = [{id, label, features: {term: tf}}, ]
         trainset_len = len(train_set)
         # iterates for every vocabulary
@@ -25,20 +26,36 @@ class MachineLearning:
             for doc in range(0, trainset_len):
                 tf = float(format(wb_sheet.cell(i + 2, doc + 2).value, ".5f"))
                 wb_sheet.cell(i + 2, doc + 2).value = tf * idf
+        return
 
-    def prepareSheet(self, wb_sheet, train_set):
+    @staticmethod
+    def createTestVector(vocabulary, wb_sheet, test_doc, trainset_len):
+        for i, voc in enumerate(vocabulary):
+
+            try:
+                tf = test_doc["features"][voc]
+            except KeyError:
+                tf = 0
+
+            idf = float(wb_sheet.cell(i + 2, trainset_len + 2).value)
+            wb_sheet.cell(i + 2, trainset_len + 3).value = format(tf * idf, ".5f")
+        return
+
+    @staticmethod
+    def prepareSheet(wb_sheet, train_set):
         # train_set = [{id, label, features: {term: tf}}, {}, ...]
         trainset_len = len(train_set)
         wb_sheet.cell(1, 1).value = "bag"
         for _i in range(2, trainset_len + 1):
             # e.g: doc-id = 037a, 110t, ...
-            wb_sheet.cell(1, _i).value = train_set[_i - 2]["id"] + train_set[_i - 2]["label"][0]
+            wb_sheet.cell(1, _i).value = train_set[_i - 2]["id"] + "_" + train_set[_i - 2]["label"][0]
         wb_sheet.cell(1, trainset_len + 2).value = "idf"
         return
 
     # splits the data-set into train and test sets
     # returns trains and test sets
-    def dataSplit(self, jsonlist):
+    @staticmethod
+    def dataSplit(jsonlist):
         # jsonlist = [{id: id1, label: lb1, features: {term: tf}}, {}, {}, ...]
 
         docs_len = len(jsonlist)  # 737
@@ -57,7 +74,8 @@ class MachineLearning:
 
         return trainset, testset
 
-    def createVocabulary(self, trainset):
+    @staticmethod
+    def createVocabulary(trainset):
         vocab = []
         for file in trainset:
             for feature in file["features"].keys():
