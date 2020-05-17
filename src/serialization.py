@@ -1,3 +1,10 @@
+# ******************************************
+#
+#   AUTHOR: ALI FAISAL
+#   Github: https://github.com/thealifaisal/
+#
+# ******************************************
+
 import os
 import json
 from random import shuffle
