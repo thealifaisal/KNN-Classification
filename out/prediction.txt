@@ -1,0 +1,1 @@
+test_file: 096_c, predicted class: c
