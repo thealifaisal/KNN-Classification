@@ -1,40 +1,11 @@
-import os
-import json
-from random import shuffle
-from src.pre_processing import Preprocessing
-import operator
+import openpyxl
+from datetime import datetime
+from src.ml_vsm import MachineLearning
 from src.serialization import Serialization
-
-
-def dataSplit(jsonlist):
-    docs_len = len(jsonlist)    # 737
-    train_len = round(70/100 * docs_len)    # 516
-    test_len = docs_len - train_len     # 221
-    trainset = []
-    testset = []
-
-    for f in range(0, train_len):
-        trainset.append(jsonlist[f].copy())
-
-    for f in range(train_len, docs_len):
-        testset.append(jsonlist[f].copy())
-
-    jsonlist.clear()
-
-    return trainset, testset
-
-
-def createVocabulary(trainset):
-    vocab = []
-    for file in trainset:
-        for feature in file["features"].keys():
-            if feature not in vocab:
-                vocab.append(feature)
-    return vocab
-
 
 if __name__ == "__main__":
 
+    print(datetime.now().strftime("%H:%M:%S") + ": setting paths...")
     # input paths
     data_folder_path = "../resources/bbcsport/"
     stop_file_path = "../resources/stopword-list.txt"
@@ -45,28 +16,50 @@ if __name__ == "__main__":
     class_file_path = "../out/class-tf.json"
     train_file_path = "../out/train-set.json"
     test_file_path = "../out/test-set.json"
+    train_vectors_path = "../out/train-tf-idf.xlsx"
 
-    labels = os.listdir(data_folder_path)  # labels = folders
-
+    print(datetime.now().strftime("%H:%M:%S") + ": serializing raw data...")
     ser = Serialization()
     stop_list = ser.importStopList(stop_file_path)
     ser.preprocessing.stop_word = stop_list
     json_list = ser.readRawData(data_folder_path)
     ser.shuffleJSONObjects(json_list)
-    ser.writeToJSONFile(json_list, json_file_path)
-    # ser.sortClassTerms()
-    # ser.writeToJSONFile(ser.class_terms, class_file_path)
+    # ser.writeToJSONFile(json_list, json_file_path)
+
+    print(datetime.now().strftime("%H:%M:%S") + ": splitting serialized data...")
+    ml = MachineLearning()
+    # splits data into 70/30 ratio
+    train_set, test_set = ml.dataSplit(json_list)
+    trainset_len = len(train_set)
+    testset_len = len(test_set)
+
+    print(datetime.now().strftime("%H:%M:%S") + ": lengths => train-data: " + str(trainset_len)
+          + ", test-data: " + str(testset_len))
+
+    # class_terms = ser.classTermFrequency(train_set)
+    # ser.sortClassTerms(class_terms)
+    # ser.writeToJSONFile(class_terms, class_file_path)
 
     # insert feature selection here and uncomment class_terms
-    # feature selection should return same DS as json_list
+    # input: train_set, class_terms
+    # output: train_set (with relevant features)
 
-    # splits data into 70/30 ratio
-    train_set, test_set = dataSplit(json_list)
-
+    print(datetime.now().strftime("%H:%M:%S") + ": writing to json files...")
     ser.writeToJSONFile(train_set, train_file_path)
     ser.writeToJSONFile(test_set, test_file_path)
 
-    vocabulary = createVocabulary(train_set)
+    print(datetime.now().strftime("%H:%M:%S") + ": creating vocabulary...")
+    vocabulary = ml.createVocabulary(train_set)
     vocabulary_len = len(vocabulary)
 
+    wb = openpyxl.Workbook()
+    wb_sheet = wb.active
 
+    print(datetime.now().strftime("%H:%M:%S") + ": preparing xlsx sheet...")
+    ml.prepareSheet(wb_sheet, train_set)
+
+    print(datetime.now().strftime("%H:%M:%S") + ": creating training vectors...")
+    ml.createTrainVectors(vocabulary, wb_sheet, train_set)
+
+    # print(datetime.now().strftime("%H:%M:%S") + ": saving training vectors...")
+    # wb.save(train_vectors_path)
