@@ -12,6 +12,7 @@
       <w>stopword</w>
       <w>testset</w>
       <w>trainset</w>
+      <w>xlsx</w>
     </words>
   </dictionary>
 </component>
