@@ -10,7 +10,6 @@ class Serialization:
     # constructor
     def __init__(self):
         self.preprocessing = Preprocessing()
-        self.class_terms = {}
 
     # reads raw text files and serialize them to JSON format
     # returns a list
@@ -45,7 +44,6 @@ class Serialization:
             "label": label,
             "features": lemmas
         }
-        # self.classTermFrequency(lemmas, label)
 
         file.close()
         return json_string
@@ -80,37 +78,51 @@ class Serialization:
         file.close()
         return
 
-    def sortClassTerms(self):
+    def sortClassTerms(self, class_terms):
         # source: https://www.w3resource.com/python-exercises/dictionary/python-data-type-dictionary-exercise-1.php
         # noinspection PyTypeChecker
-        for ct in self.class_terms:
-            self.class_terms[ct] = dict(sorted(self.class_terms[ct].items(), key=operator.itemgetter(1),
-                                               reverse=True))
+        for ct in class_terms:
+            class_terms[ct] = dict(sorted(class_terms[ct].items(), key=operator.itemgetter(1),
+                                          reverse=True))
         return
 
-    # lemmas = terms in a file as keys and term-frequencies as values
-    # label = label/class to which the file belongs
-    def classTermFrequency(self, lemmas, label):
+    def classTermFrequency(self, data):
+        # e.g: data = [{id: id1, label: lb1, features: {term: tf}}, {}, {}, ...]
 
-        # iterates for every term in document
-        for lem in lemmas.keys():
+        # class_terms = {class-1: {term-1: tf}, class-2: {}, ...}
+        class_terms = {}
 
-            # class_terms = {class-1: {term-1: tf}, class-2: {}, ...}
+        # iterates for every file in train-set
+        for obj in data:
+
+            label = obj["label"]
+            features_dict = obj["features"]
+
             # checks if label/class is in the dict
-            if label not in self.class_terms.keys():
-                # if not, inserts a label with empty dict
-                self.class_terms[label] = {}
-
-            # checks if term is in a particular class
-            if lem not in self.class_terms[label].keys():
-                # if not, adds a the term in class with its term frequency of current doc
-                self.class_terms[label][lem] = lemmas.get(lem)
+            if label not in class_terms.keys():
+                # if not, inserts a label with a dict => obj["features]
+                # feat = tuple(term, tf); feat[0] => term, feat[1] => tf
+                # using dict comprehension
+                class_terms[label] = {feat[0]: feat[1] for feat in features_dict.items()}
             else:
-                # if exists, fetches the tf for the term in class
-                # fetches the tf for the term in the current doc
-                # sums the two tf, and assigns this new tf against the term in class
-                self.class_terms[label][lem] = self.class_terms[label].get(lem) + lemmas.get(lem)
-        return
+                # fetches dictionary => {term, tf, ...} against label
+                dictionary: dict = class_terms[label]
+                # iterates for every for term
+                # dict.items() returns a list of tuples
+                for feat in features_dict.items():
+                    # feat = tuple(term, tf); feat[0] => term, feat[1] => tf
+                    term = feat[0]
+                    tf = feat[1]
+                    if term not in dictionary.keys():
+                        dictionary[term] = tf
+                    else:
+                        # if exists, fetches the tf for the term (feat[0]) in class => dictionary.get(feat[0])
+                        # fetches the tf for the term (feat[0]) in the current doc => feat[1]
+                        # sums the two tf, and assigns this new tf against the term (feat[0]) in class
+                        dictionary[term] = dictionary.get(term) + tf
+                        # updates the dictionary
+                        class_terms[label] = dictionary
+        return class_terms
 
     def importStopList(self, path):
         # a stop-word file is opened and parsed to be saved as a list
