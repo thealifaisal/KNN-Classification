@@ -1,0 +1,12 @@
+CPU: i5 3470 | 3.20 Ghz | 4 Cores
+RAM: 8 GB | 1333 Mhz
+
+using xlsx sheet for calculating tf-idf, cosine similarity was too much slow.
+so slow that each test-file was predicted in 40 seconds.
+
+hene, refactored entire code and then used python lists and numpy arrays operations on lists.
+whole test-set of 221 documents was predicted in under 60 seconds.
+
+takeaway:
+
+use python lists and numpy for list operations.
