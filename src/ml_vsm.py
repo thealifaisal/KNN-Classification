@@ -208,13 +208,13 @@ class MachineLearning:
 
         # check if all values are same in KNN
         #   means that in top K results, each class occurred has same number of docs occurrences
-        # e.g: KNN = {"a": 1`, "t": 1, "r": 1}
+        # e.g: KNN = {"athletics": 1`, "tennis": 1, "rugby": 1}
         # all_values_same = {True, False}
         all_values_same = all(x == max_item[1] for x in KNN.values())
 
         if all_values_same:
             # then select the doc from result_set with max cosine value
-            # e.g: doc_key = "003_a"
+            # e.g: doc_key = "003_athletics"
             doc_key = list(result_set.keys())[0]
             predicted_class = doc_key.split("_")[1]
         else:
