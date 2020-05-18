@@ -228,10 +228,10 @@ class MachineLearning:
         file = open("../out/prediction.txt", "a+")
 
         if predicted_class == actual_class:
-            file.write("test_file: " + test_composite_key + ", predicted class: " + labels[predicted_class] + "\n")
+            file.write("test_file: " + test_composite_key + " \t\tpredicted class: " + labels[predicted_class] + "\n")
             correct = 1
         else:
-            file.write("test_file: " + test_composite_key + ", predicted class: " + labels[predicted_class] + "\n")
+            file.write("test_file: " + test_composite_key + " \t\tpredicted class: " + labels[predicted_class] + "\n")
             correct = 0
 
         file.close()
