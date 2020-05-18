@@ -216,7 +216,6 @@ class MachineLearning:
             # then select the doc from result_set with max cosine value
             # e.g: doc_key = "003_a"
             doc_key = list(result_set.keys())[0]
-            print(doc_key)
             predicted_class = doc_key.split("_")[1]
         else:
             # otherwise select the class with most documents in KNN
