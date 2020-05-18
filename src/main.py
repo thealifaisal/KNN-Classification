@@ -17,12 +17,11 @@ if __name__ == "__main__":
     stop_file_path = "../resources/stopword-list.txt"
 
     # output paths
-    json_file_path = "../out/json_out.json"
-    vocab_file_path = "../out/vocab.txt"
-    class_file_path = "../out/class-tf.json"
     train_file_path = "../out/train-set.json"
     test_file_path = "../out/test-set.json"
-    train_vectors_path = "../out/train-tf-idf.xlsx"
+    # json_file_path = "../out/json_out.json"
+    # vocab_file_path = "../out/vocab.txt"
+    # class_file_path = "../out/class-tf.json"
 
     print(datetime.now().strftime("%H:%M:%S") + ": serializing raw data...")
     ser = Serialization()
