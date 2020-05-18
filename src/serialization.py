@@ -57,12 +57,14 @@ class Serialization:
 
     # shuffles a JSON list so that
     # there is no bias in splitting the data set into train/test
-    def shuffleJSONObjects(self, jsonlist):
+    @staticmethod
+    def shuffleJSONObjects(jsonlist):
         shuffle(jsonlist)
         return
 
     # writes the data(list or dict) in to JSON file
-    def writeToJSONFile(self, data, jsonfile_path):
+    @staticmethod
+    def writeToJSONFile(data, jsonfile_path):
 
         # opens a JSON file for writing
         file = open(jsonfile_path, "w")
@@ -85,7 +87,8 @@ class Serialization:
         file.close()
         return
 
-    def sortClassTerms(self, class_terms):
+    @staticmethod
+    def sortClassTerms(class_terms):
         # source: https://www.w3resource.com/python-exercises/dictionary/python-data-type-dictionary-exercise-1.php
         # noinspection PyTypeChecker
         for ct in class_terms:
@@ -93,7 +96,8 @@ class Serialization:
                                           reverse=True))
         return
 
-    def classTermFrequency(self, data):
+    @staticmethod
+    def classTermFrequency(data):
         # e.g: data = [{id: id1, label: lb1, features: {term: tf}}, {}, {}, ...]
 
         # class_terms = {class-1: {term-1: tf}, class-2: {}, ...}
@@ -131,7 +135,8 @@ class Serialization:
                         class_terms[label] = dictionary
         return class_terms
 
-    def importStopList(self, path):
+    @staticmethod
+    def importStopList(path):
         # a stop-word file is opened and parsed to be saved as a list
         # when path is not empty
         if path != "":
