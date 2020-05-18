@@ -5,7 +5,6 @@
 #
 # ******************************************
 
-import openpyxl
 from datetime import datetime
 from src.ml_vsm import MachineLearning
 from src.serialization import Serialization
