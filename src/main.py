@@ -66,17 +66,15 @@ if __name__ == "__main__":
     vocabulary_len = len(vocabulary)
     print(datetime.now().strftime("%H:%M:%S") + ": vocabulary size = " + str(vocabulary_len))
 
-    wb = openpyxl.Workbook()
-    wb_sheet = wb.active
-
-    print(datetime.now().strftime("%H:%M:%S") + ": preparing xlsx sheet...")
-    ml.prepareSheet(wb_sheet, train_set)
-
     print(datetime.now().strftime("%H:%M:%S") + ": creating training vectors...")
-    ml.createTrainVectors(vocabulary, wb_sheet, train_set)
+    # e.g: train_vectors = {"doc-id": [tf-idf, ...], ...}
+    train_vectors, idf_vector = ml.createTrainVectors(vocabulary, train_set)
 
     # print(datetime.now().strftime("%H:%M:%S") + ": saving training vectors...")
     # wb.save(train_vectors_path)
+
+    print(datetime.now().strftime("%H:%M:%S") + ": creating testing vectors...")
+    test_vectors = ml.createTestVectors(vocabulary, idf_vector, test_set)
 
     print(datetime.now().strftime("%H:%M:%S") + ": started testing...")
 
@@ -85,22 +83,23 @@ if __name__ == "__main__":
 
     # iterating for every test file
     for i in range(0, testset_len):
-        test_obj = test_set[i]
-        ml.createTestVector(vocabulary, wb_sheet, test_obj, trainset_len)
+
+        doc_id = test_set[i]["id"]
+        label = test_set[i]["label"]
+        key = doc_id + "_" + label
 
         # returns a result dict, where doc with highest cosine is the first item
-        # result_set = {"062_c": 0.51468, ...}
-        result_set = ml.cosineSimilarity(trainset_len, vocabulary_len, wb_sheet)
+        # result_set = {"096_cricket": 0.51468, ...}
+        result_set = ml.cosineSimilarity(train_vectors, test_vectors, key, vocabulary_len)
 
         # k = 3; to select top k neighbors/docs from result_set
         k = 3
 
-        # e.g: test_composite_key = 096_c
-        test_composite_key = test_obj["id"] + "_" + test_obj["label"][0]
-        correct_predictions += ml.classifyKNN(result_set, k, test_composite_key)
+        # e.g: test_composite_key = 096_cricket
+        correct_predictions += ml.classifyKNN(result_set, k, key)
 
     # accuracy = no of files correctly predicted / total files tested
-    accuracy = format(correct_predictions / testset_len, ".5f")
+    accuracy = format((correct_predictions / testset_len)*100, ".5f")
 
     print(datetime.now().strftime("%H:%M:%S") + ": KNN accuracy = " + accuracy)
 
